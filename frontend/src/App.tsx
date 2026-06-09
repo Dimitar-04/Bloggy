@@ -1,17 +1,8 @@
 import { useEffect, useState } from 'react'
-
-type Post = {
-  _id: string
-  title: string
-  slug: string
-  content: string
-  excerpt?: string | null
-  author_name: string
-  tags: string[]
-  status: string
-  created_at?: string
-  published_at?: string | null
-}
+import CreatePostForm from './components/CreatePostForm'
+import Home from './components/Home'
+import Navbar from './components/Navbar'
+import type { Post } from './types'
 
 const API_URL = 'http://localhost:8000/posts'
 
@@ -43,65 +34,15 @@ function App() {
 
   return (
     <main className="min-h-screen bg-zinc-50 text-zinc-950">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-5 py-10 sm:px-8">
-        <header className="border-b border-zinc-200 pb-5">
-          <p className="text-sm font-medium uppercase tracking-wide text-zinc-500">
-            Blog
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-normal text-zinc-950">
-            Posts
-          </h1>
-        </header>
+      <Navbar />
 
-        {isLoading && (
-          <p className="text-sm text-zinc-600">Loading posts from the backend.</p>
-        )}
-
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-
-        {!isLoading && !error && posts.length === 0 && (
-          <p className="text-sm text-zinc-600">No posts found.</p>
-        )}
-
-        <section className="flex flex-col gap-4">
-          {posts.map((post) => (
-            <article
-              key={post._id}
-              className="rounded-md border border-zinc-200 bg-white p-5 shadow-sm"
-            >
-              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-                <span>{post.author_name}</span>
-                <span>/</span>
-                <span className="capitalize">{post.status}</span>
-              </div>
-
-              <h2 className="mt-3 text-xl font-semibold text-zinc-950">
-                {post.title}
-              </h2>
-
-              <p className="mt-3 text-sm leading-6 text-zinc-700">
-                {post.excerpt || post.content}
-              </p>
-
-              {post.tags.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-600"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </article>
-          ))}
-        </section>
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <Home posts={posts} isLoading={isLoading} error={error} />
+        <CreatePostForm
+          onPostCreated={(post) =>
+            setPosts((currentPosts) => [post, ...currentPosts])
+          }
+        />
       </div>
     </main>
   )
