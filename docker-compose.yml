@@ -1,7 +1,18 @@
 services:
+  backend:
+    build: ./backend
+    container_name: blog-backend
+    ports:
+      - '8000:8000'
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      DATABASE_NAME: blogapp
+    depends_on:
+      - mongo
+
   mongo:
     image: mongo:7
-    container_name: mongo
+    container_name: blog-mongo
     ports:
       - '27017:27017'
     volumes:
