@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-import database as db
+from database import db
 from schemas.post import PostCreate
 from models.posts import create_post_document
 
@@ -15,3 +15,16 @@ async def create_post(post: PostCreate):
     post_document["_id"] = str(result.inserted_id)
 
     return post_document
+
+
+@router.get("")
+async def get_all_posts():
+    posts = []
+
+    cursor = db.posts.find()
+
+    async for post in cursor:
+        post["_id"] = str(post["_id"])
+        posts.append(post)
+
+    return posts
