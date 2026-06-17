@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from datetime import datetime, timezone
+
+from bson import ObjectId
+from fastapi import APIRouter, HTTPException
 from database import db
-from schemas.post import PostCreate
+from schemas.post import CommentCreate, PostCreate
 from models.posts import create_post_document
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -28,3 +31,45 @@ async def get_all_posts():
         posts.append(post)
 
     return posts
+
+
+@router.post("/{post_id}/comments")
+async def create_comment(post_id: str, comment: CommentCreate):
+    if not ObjectId.is_valid(post_id):
+        raise HTTPException(status_code=400, detail="Invalid post id")
+
+    comment_document = {
+        "_id": str(ObjectId()),
+        "author_name": comment.author_name,
+        "content": comment.content,
+        "created_at": datetime.now(timezone.utc),
+    }
+
+    result = await db.posts.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$push": {"comments": comment_document}},
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    return comment_document
+
+
+@router.delete("/{post_id}/comments/{comment_id}")
+async def delete_comment(post_id: str, comment_id: str):
+    if not ObjectId.is_valid(post_id):
+        raise HTTPException(status_code=400, detail="Invalid post id")
+
+    result = await db.posts.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$pull": {"comments": {"_id": comment_id}}},
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    return {"deleted_comment_id": comment_id}

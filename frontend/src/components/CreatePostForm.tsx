@@ -78,16 +78,17 @@ function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
     <aside id="create" className="lg:sticky lg:top-6 lg:self-start">
       <form
         onSubmit={handleCreatePost}
-        className="flex flex-col gap-4 rounded-md border border-zinc-200 bg-white p-5 shadow-sm"
+        className="flex flex-col gap-4 overflow-hidden rounded-md border border-blue-100 bg-white shadow-lg shadow-blue-950/10"
       >
-        <div>
-          <p className="text-sm font-medium uppercase tracking-wide text-zinc-500">
+        <div className="bg-blue-950 px-5 py-4 text-white">
+          <p className="text-sm font-medium uppercase tracking-wide text-blue-200">
             Create
           </p>
-          <h2 className="mt-1 text-xl font-semibold text-zinc-950">New post</h2>
+          <h2 className="mt-1 text-xl font-semibold text-white">New post</h2>
         </div>
 
-        <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700">
+        <div className="flex flex-col gap-4 px-5 pb-5">
+        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Title
           <input
             required
@@ -96,21 +97,21 @@ function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
               updatePostForm('title', event.target.value)
               updatePostForm('slug', createSlug(event.target.value))
             }}
-            className="h-10 rounded border border-zinc-300 px-3 text-sm font-normal text-zinc-950 outline-none transition focus:border-zinc-500"
+            className="h-10 rounded border border-slate-300 bg-slate-50 px-3 text-sm font-normal text-slate-950 outline-none transition focus:border-blue-700 focus:bg-white"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Slug
           <input
             required
             value={postForm.slug}
             onChange={(event) => updatePostForm('slug', event.target.value)}
-            className="h-10 rounded border border-zinc-300 px-3 text-sm font-normal text-zinc-950 outline-none transition focus:border-zinc-500"
+            className="h-10 rounded border border-slate-300 bg-slate-50 px-3 text-sm font-normal text-slate-950 outline-none transition focus:border-blue-700 focus:bg-white"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Author
           <input
             required
@@ -118,48 +119,49 @@ function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
             onChange={(event) =>
               updatePostForm('author_name', event.target.value)
             }
-            className="h-10 rounded border border-zinc-300 px-3 text-sm font-normal text-zinc-950 outline-none transition focus:border-zinc-500"
+            className="h-10 rounded border border-slate-300 bg-slate-50 px-3 text-sm font-normal text-slate-950 outline-none transition focus:border-blue-700 focus:bg-white"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Excerpt
           <textarea
             value={postForm.excerpt ?? ''}
             onChange={(event) => updatePostForm('excerpt', event.target.value)}
-            className="min-h-20 rounded border border-zinc-300 px-3 py-2 text-sm font-normal text-zinc-950 outline-none transition focus:border-zinc-500"
+            className="min-h-20 rounded border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-normal text-slate-950 outline-none transition focus:border-blue-700 focus:bg-white"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Content
           <textarea
             required
             value={postForm.content}
             onChange={(event) => updatePostForm('content', event.target.value)}
-            className="min-h-32 rounded border border-zinc-300 px-3 py-2 text-sm font-normal text-zinc-950 outline-none transition focus:border-zinc-500"
+            className="min-h-32 rounded border border-slate-300 bg-slate-50 px-3 py-2 text-sm font-normal text-slate-950 outline-none transition focus:border-blue-700 focus:bg-white"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Tags
           <input
             value={tagInput}
             onChange={(event) => setTagInput(event.target.value)}
-            className="h-10 rounded border border-zinc-300 px-3 text-sm font-normal text-zinc-950 outline-none transition focus:border-zinc-500"
+            className="h-10 rounded border border-slate-300 bg-slate-50 px-3 text-sm font-normal text-slate-950 outline-none transition focus:border-blue-700 focus:bg-white"
             placeholder="fastapi, docker"
           />
         </label>
 
-        {formMessage && <p className="text-sm text-zinc-600">{formMessage}</p>}
+        {formMessage && <p className="text-sm text-blue-800">{formMessage}</p>}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="h-10 rounded bg-zinc-950 px-4 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-400"
+          className="h-10 rounded bg-blue-950 px-4 text-sm font-medium text-white transition hover:bg-blue-900 disabled:cursor-not-allowed disabled:bg-slate-400"
         >
           {isSubmitting ? 'Creating' : 'Create post'}
         </button>
+        </div>
       </form>
     </aside>
   )

@@ -1,4 +1,5 @@
 export type {
+  CommentCreateInput,
   Post,
   PostComment,
   PostCreateInput,

@@ -33,11 +33,40 @@ function App() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-zinc-50 text-zinc-950">
+    <main className="min-h-screen bg-slate-50 text-slate-950">
       <Navbar />
 
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <Home posts={posts} isLoading={isLoading} error={error} />
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <Home
+          posts={posts}
+          isLoading={isLoading}
+          error={error}
+          onCommentCreated={(postId, comment) =>
+            setPosts((currentPosts) =>
+              currentPosts.map((post) =>
+                post._id === postId
+                  ? { ...post, comments: [...(post.comments ?? []), comment] }
+                  : post,
+              ),
+            )
+          }
+          onCommentDeleted={(postId, commentId) =>
+            setPosts((currentPosts) =>
+              currentPosts.map((post) =>
+                post._id === postId
+                  ? {
+                      ...post,
+                      comments: post.comments?.filter(
+                        (comment) =>
+                          typeof comment === 'string' ||
+                          comment._id !== commentId,
+                      ),
+                    }
+                  : post,
+              ),
+            )
+          }
+        />
         <CreatePostForm
           onPostCreated={(post) =>
             setPosts((currentPosts) => [post, ...currentPosts])

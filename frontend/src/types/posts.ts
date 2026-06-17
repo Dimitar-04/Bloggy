@@ -1,9 +1,15 @@
 export type PostStatus = 'draft' | 'published'
 
 export type PostComment = {
+  _id?: string
   author_name: string
   content: string
   created_at?: string
+}
+
+export type CommentCreateInput = {
+  author_name: string
+  content: string
 }
 
 export type Post = {
