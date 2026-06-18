@@ -1,20 +1,20 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react';
 import type {
   CommentCreateInput,
   Post,
   PostComment,
   PostFilters,
-} from '../types'
+} from '../types';
 
-const API_URL = 'http://localhost:8000/posts'
+const API_URL = 'http://localhost:8000/posts';
 
 type HomeProps = {
-  posts: Post[]
-  isLoading: boolean
-  error: string | null
-  onCommentCreated: (postId: string, comment: PostComment) => void
-  onCommentDeleted: (postId: string, commentId: string) => void
-}
+  posts: Post[];
+  isLoading: boolean;
+  error: string | null;
+  onCommentCreated: (postId: string, comment: PostComment) => void;
+  onCommentDeleted: (postId: string, commentId: string) => void;
+};
 
 function Home({
   posts,
@@ -25,18 +25,22 @@ function Home({
 }: HomeProps) {
   const [filters, setFilters] = useState<PostFilters>({
     search: '',
-  })
+  });
   const [commentForms, setCommentForms] = useState<
     Record<string, CommentCreateInput>
-  >({})
+  >({});
   const [submittingCommentId, setSubmittingCommentId] = useState<string | null>(
     null,
-  )
-  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null)
-  const [commentErrors, setCommentErrors] = useState<Record<string, string>>({})
+  );
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(
+    null,
+  );
+  const [commentErrors, setCommentErrors] = useState<Record<string, string>>(
+    {},
+  );
 
   const filteredPosts = useMemo(() => {
-    const search = filters.search.trim().toLowerCase()
+    const search = filters.search.trim().toLowerCase();
 
     return posts.filter((post) => {
       return (
@@ -45,19 +49,19 @@ function Home({
         post.content.toLowerCase().includes(search) ||
         (post.excerpt ?? '').toLowerCase().includes(search) ||
         post.author_name.toLowerCase().includes(search)
-      )
-    })
-  }, [filters.search, posts])
+      );
+    });
+  }, [filters.search, posts]);
 
   function normalizeComment(comment: PostComment | string): PostComment {
     if (typeof comment === 'string') {
       return {
         author_name: 'Unknown author',
         content: comment,
-      }
+      };
     }
 
-    return comment
+    return comment;
   }
 
   function updateCommentForm(
@@ -72,29 +76,29 @@ function Home({
         content: currentForms[postId]?.content ?? '',
         [field]: value,
       },
-    }))
+    }));
   }
 
   async function handleCreateComment(postId: string) {
-    const form = commentForms[postId] ?? { author_name: '', content: '' }
+    const form = commentForms[postId] ?? { author_name: '', content: '' };
     const payload: CommentCreateInput = {
       author_name: form.author_name.trim(),
       content: form.content.trim(),
-    }
+    };
 
     if (!payload.author_name || !payload.content) {
       setCommentErrors((currentErrors) => ({
         ...currentErrors,
         [postId]: 'Author and comment are required.',
-      }))
-      return
+      }));
+      return;
     }
 
-    setSubmittingCommentId(postId)
+    setSubmittingCommentId(postId);
     setCommentErrors((currentErrors) => ({
       ...currentErrors,
       [postId]: '',
-    }))
+    }));
 
     try {
       const response = await fetch(`${API_URL}/${postId}/comments`, {
@@ -103,57 +107,60 @@ function Home({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`Backend returned ${response.status}`)
+        throw new Error(`Backend returned ${response.status}`);
       }
 
-      const createdComment = (await response.json()) as PostComment
-      onCommentCreated(postId, createdComment)
+      const createdComment = (await response.json()) as PostComment;
+      onCommentCreated(postId, createdComment);
       setCommentForms((currentForms) => ({
         ...currentForms,
         [postId]: {
           author_name: '',
           content: '',
         },
-      }))
+      }));
     } catch (err) {
       setCommentErrors((currentErrors) => ({
         ...currentErrors,
         [postId]:
           err instanceof Error ? err.message : 'Could not create comment.',
-      }))
+      }));
     } finally {
-      setSubmittingCommentId(null)
+      setSubmittingCommentId(null);
     }
   }
 
   async function handleDeleteComment(postId: string, commentId: string) {
-    setDeletingCommentId(commentId)
+    setDeletingCommentId(commentId);
     setCommentErrors((currentErrors) => ({
       ...currentErrors,
       [postId]: '',
-    }))
+    }));
 
     try {
-      const response = await fetch(`${API_URL}/${postId}/comments/${commentId}`, {
-        method: 'DELETE',
-      })
+      const response = await fetch(
+        `${API_URL}/${postId}/comments/${commentId}`,
+        {
+          method: 'DELETE',
+        },
+      );
 
       if (!response.ok) {
-        throw new Error(`Backend returned ${response.status}`)
+        throw new Error(`Backend returned ${response.status}`);
       }
 
-      onCommentDeleted(postId, commentId)
+      onCommentDeleted(postId, commentId);
     } catch (err) {
       setCommentErrors((currentErrors) => ({
         ...currentErrors,
         [postId]:
           err instanceof Error ? err.message : 'Could not delete comment.',
-      }))
+      }));
     } finally {
-      setDeletingCommentId(null)
+      setDeletingCommentId(null);
     }
   }
 
@@ -161,7 +168,7 @@ function Home({
     <section id="posts" className="flex min-w-0 flex-col gap-6">
       <header className="border-b border-blue-100 pb-5">
         <p className="text-sm font-medium uppercase tracking-wide text-blue-700">
-          Blog
+          Blogs
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-normal text-blue-950">
           Posts
@@ -179,7 +186,9 @@ function Home({
       </label>
 
       {isLoading && (
-        <p className="text-sm text-slate-600">Loading posts from the backend.</p>
+        <p className="text-sm text-slate-600">
+          Loading posts from the backend.
+        </p>
       )}
 
       {error && (
@@ -192,20 +201,25 @@ function Home({
         <p className="text-sm text-zinc-600">No posts found.</p>
       )}
 
-      {!isLoading && !error && posts.length > 0 && filteredPosts.length === 0 && (
-        <p className="text-sm text-zinc-600">No posts match this search.</p>
-      )}
+      {!isLoading &&
+        !error &&
+        posts.length > 0 &&
+        filteredPosts.length === 0 && (
+          <p className="text-sm text-zinc-600">No posts match this search.</p>
+        )}
 
       <div className="flex flex-col gap-4">
         {filteredPosts.map((post) => (
           <article
             key={post._id}
-          className="rounded-md border border-blue-100 bg-white p-5 shadow-sm shadow-blue-950/5"
-        >
+            className="rounded-md border border-blue-100 bg-white p-5 shadow-sm shadow-blue-950/5"
+          >
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
               <span>{post.author_name}</span>
               <span>/</span>
-              <span className="rounded bg-blue-50 px-2 py-0.5 font-medium capitalize text-blue-800">{post.status}</span>
+              <span className="rounded bg-blue-50 px-2 py-0.5 font-medium capitalize text-blue-800">
+                {post.status}
+              </span>
             </div>
 
             <h2 className="mt-3 text-xl font-semibold text-blue-950">
@@ -242,7 +256,7 @@ function Home({
                 <h3 className="text-sm font-medium text-blue-950">Comments</h3>
                 <div className="mt-3 flex flex-col gap-2">
                   {post.comments?.map((comment, index) => {
-                    const normalizedComment = normalizeComment(comment)
+                    const normalizedComment = normalizeComment(comment);
 
                     return (
                       <div
@@ -271,7 +285,9 @@ function Home({
                           {normalizedComment._id && (
                             <button
                               type="button"
-                              disabled={deletingCommentId === normalizedComment._id}
+                              disabled={
+                                deletingCommentId === normalizedComment._id
+                              }
                               onClick={() =>
                                 handleDeleteComment(
                                   post._id,
@@ -287,7 +303,7 @@ function Home({
                           )}
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -296,13 +312,11 @@ function Home({
             <form
               className="mt-5 grid gap-3 border-t border-blue-100 pt-4"
               onSubmit={(event) => {
-                event.preventDefault()
-                handleCreateComment(post._id)
+                event.preventDefault();
+                handleCreateComment(post._id);
               }}
             >
-              <h3 className="text-sm font-medium text-blue-950">
-                Add comment
-              </h3>
+              <h3 className="text-sm font-medium text-blue-950">Add comment</h3>
               <div className="grid gap-3 sm:grid-cols-[180px_minmax(0,1fr)]">
                 <input
                   value={commentForms[post._id]?.author_name ?? ''}
@@ -342,7 +356,7 @@ function Home({
         ))}
       </div>
     </section>
-  )
+  );
 }
 
-export default Home
+export default Home;
