@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import type { Post, PostCreateInput } from '../types'
+import { POSTS_API_URL } from '../config/api'
 import { createSlug, parseListInput } from '../utils/posts'
-
-const API_URL = 'http://localhost:8000/posts'
 
 const initialPostForm: PostCreateInput = {
   title: '',
@@ -40,7 +39,7 @@ function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
     }
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(POSTS_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

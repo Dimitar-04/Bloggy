@@ -5,8 +5,7 @@ import type {
   PostComment,
   PostFilters,
 } from '../types';
-
-const API_URL = 'http://localhost:8000/posts';
+import { POSTS_API_URL } from '../config/api';
 
 type HomeProps = {
   posts: Post[];
@@ -101,7 +100,7 @@ function Home({
     }));
 
     try {
-      const response = await fetch(`${API_URL}/${postId}/comments`, {
+      const response = await fetch(`${POSTS_API_URL}/${postId}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +141,7 @@ function Home({
 
     try {
       const response = await fetch(
-        `${API_URL}/${postId}/comments/${commentId}`,
+        `${POSTS_API_URL}/${postId}/comments/${commentId}`,
         {
           method: 'DELETE',
         },

@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react'
 import CreatePostForm from './components/CreatePostForm'
 import Home from './components/Home'
 import Navbar from './components/Navbar'
+import { POSTS_API_URL } from './config/api'
 import type { Post } from './types'
-
-const API_URL = 'http://localhost:8000/posts'
 
 function App() {
   const [posts, setPosts] = useState<Post[]>([])
@@ -14,7 +13,7 @@ function App() {
   useEffect(() => {
     async function loadPosts() {
       try {
-        const response = await fetch(API_URL)
+        const response = await fetch(POSTS_API_URL)
 
         if (!response.ok) {
           throw new Error(`Backend returned ${response.status}`)
