@@ -167,7 +167,7 @@ function Home({
     <section id="posts" className="flex min-w-0 flex-col gap-6">
       <header className="border-b border-blue-100 pb-5">
         <p className="text-sm font-medium uppercase tracking-wide text-blue-700">
-          Blog
+          Blogs
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-normal text-blue-950">
           Posts
