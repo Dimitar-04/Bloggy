@@ -4,7 +4,12 @@ metadata:
   name: frontend
   namespace: blog-app
 spec:
-  replicas: 2
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: frontend
@@ -15,8 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: dimitar04/blog-frontend:latest
-          imagePullPolicy: Always
+          image: dimitar04/blog-frontend:v10
           ports:
             - name: http
               containerPort: 5173

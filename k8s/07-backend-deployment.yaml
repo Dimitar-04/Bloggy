@@ -4,7 +4,12 @@ metadata:
   name: backend
   namespace: blog-app
 spec:
-  replicas: 2
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: backend
@@ -15,8 +20,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: dimitar04/blog-backend:latest
-          imagePullPolicy: Always
+          image: dimitar04/blog-backend:v10
           ports:
             - name: http
               containerPort: 8000
