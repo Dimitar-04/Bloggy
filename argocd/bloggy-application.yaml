@@ -18,5 +18,8 @@ spec:
     namespace: blog-app
 
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
