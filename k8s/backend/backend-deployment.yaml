@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: dimitar04/blog-backend:v10
+          image: dimitar04/blog-backend:v13
           ports:
             - name: http
               containerPort: 8000
