@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: blog-app
+spec:
+  serviceName: mongo
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:7
+          command:
+            - sh
+            - -c
+            - mongod --replSet "$MONGO_REPLICA_SET_NAME" --bind_ip_all
+          ports:
+            - name: mongo
+              containerPort: 27017
+          env:
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: DATABASE_NAME
+            - name: MONGO_REPLICA_SET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: MONGO_REPLICA_SET_NAME
+            - name: MONGO_APP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_APP_USERNAME
+            - name: MONGO_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_APP_PASSWORD
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

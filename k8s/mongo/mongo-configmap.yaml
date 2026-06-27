@@ -5,3 +5,4 @@ metadata:
   namespace: blog-app
 data:
   DATABASE_NAME: blogapp
+  MONGO_REPLICA_SET_NAME: rs0
