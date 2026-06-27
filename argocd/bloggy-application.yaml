@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bloggy
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/Dimitar-04/Bloggy.git
+    targetRevision: main
+    path: k8s
+    directory:
+      recurse: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: blog-app
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
