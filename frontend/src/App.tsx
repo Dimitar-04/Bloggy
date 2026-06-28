@@ -65,6 +65,11 @@ function App() {
               ),
             )
           }
+          onPostDeleted={(postId) =>
+            setPosts((currentPosts) =>
+              currentPosts.filter((post) => post._id !== postId),
+            )
+          }
         />
         <CreatePostForm
           onPostCreated={(post) =>

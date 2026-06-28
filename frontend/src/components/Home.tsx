@@ -13,6 +13,7 @@ type HomeProps = {
   error: string | null;
   onCommentCreated: (postId: string, comment: PostComment) => void;
   onCommentDeleted: (postId: string, commentId: string) => void;
+  onPostDeleted: (postId: string) => void;
 };
 
 function Home({
@@ -21,6 +22,7 @@ function Home({
   error,
   onCommentCreated,
   onCommentDeleted,
+  onPostDeleted,
 }: HomeProps) {
   const [filters, setFilters] = useState<PostFilters>({
     search: '',
@@ -34,9 +36,11 @@ function Home({
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(
     null,
   );
+  const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
   const [commentErrors, setCommentErrors] = useState<Record<string, string>>(
     {},
   );
+  const [postErrors, setPostErrors] = useState<Record<string, string>>({});
 
   const filteredPosts = useMemo(() => {
     const search = filters.search.trim().toLowerCase();
@@ -163,6 +167,33 @@ function Home({
     }
   }
 
+  async function handleDeletePost(postId: string) {
+    setDeletingPostId(postId);
+    setPostErrors((currentErrors) => ({
+      ...currentErrors,
+      [postId]: '',
+    }));
+
+    try {
+      const response = await fetch(`${POSTS_API_URL}/${postId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Backend returned ${response.status}`);
+      }
+
+      onPostDeleted(postId);
+    } catch (err) {
+      setPostErrors((currentErrors) => ({
+        ...currentErrors,
+        [postId]: err instanceof Error ? err.message : 'Could not delete post.',
+      }));
+    } finally {
+      setDeletingPostId(null);
+    }
+  }
+
   return (
     <section id="posts" className="flex min-w-0 flex-col gap-6">
       <header className="border-b border-blue-100 pb-5">
@@ -213,13 +244,29 @@ function Home({
             key={post._id}
             className="rounded-md border border-blue-100 bg-white p-5 shadow-sm shadow-blue-950/5"
           >
-            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-              <span>{post.author_name}</span>
-              <span>/</span>
-              <span className="rounded bg-blue-50 px-2 py-0.5 font-medium capitalize text-blue-800">
-                {post.status}
-              </span>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                <span>{post.author_name}</span>
+                <span>/</span>
+                <span className="rounded bg-blue-50 px-2 py-0.5 font-medium capitalize text-blue-800">
+                  {post.status}
+                </span>
+              </div>
+              <button
+                type="button"
+                disabled={deletingPostId === post._id}
+                onClick={() => handleDeletePost(post._id)}
+                className="rounded border border-blue-100 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:text-slate-400"
+              >
+                {deletingPostId === post._id ? 'Deleting' : 'Delete post'}
+              </button>
             </div>
+
+            {postErrors[post._id] && (
+              <p className="mt-3 text-sm text-red-700">
+                {postErrors[post._id]}
+              </p>
+            )}
 
             <h2 className="mt-3 text-xl font-semibold text-blue-950">
               {post.title}

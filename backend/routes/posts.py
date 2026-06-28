@@ -33,6 +33,19 @@ async def get_all_posts():
     return posts
 
 
+@router.delete("/{post_id}")
+async def delete_post(post_id: str):
+    if not ObjectId.is_valid(post_id):
+        raise HTTPException(status_code=400, detail="Invalid post id")
+
+    result = await db.posts.delete_one({"_id": ObjectId(post_id)})
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    return {"deleted_post_id": post_id}
+
+
 @router.post("/{post_id}/comments")
 async def create_comment(post_id: str, comment: CommentCreate):
     if not ObjectId.is_valid(post_id):
