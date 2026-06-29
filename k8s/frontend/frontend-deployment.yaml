@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: dimitar04/blog-frontend:v14
+          image: dimitar04/blog-frontend:v15
           ports:
             - name: http
               containerPort: 5173
