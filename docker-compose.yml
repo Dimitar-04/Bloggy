@@ -2,6 +2,8 @@ services:
   frontend:
     build: ./frontend
     container_name: blog-frontend
+    env_file:
+      - .env
     ports:
       - '5173:5173'
     volumes:
@@ -14,11 +16,10 @@ services:
   backend:
     build: ./backend
     container_name: blog-backend
+    env_file:
+      - .env
     ports:
       - '8000:8000'
-    environment:
-      MONGO_URL: mongodb://mongo:27017
-      DATABASE_NAME: blogapp
     volumes:
       - ./backend:/backend
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
